@@ -93,6 +93,10 @@ func NewValue(v interface{}) Value {
 		return NewIntegerValue(int(val))
 	case uint32:
 		return NewIntegerValue(int(val))
+	case uint64:
+		// uint64 is not supported by AeroSpike, so information about its type being unsigned is lost upon storage
+		// see also: https://github.com/aerospike/aerospike-client-go/issues/62
+		return NewLongValue(int64(val))
 	case float32:
 		return NewFloatValue(float64(val))
 	case float64:
@@ -134,6 +138,11 @@ func NewValue(v interface{}) Value {
 		return NewLongValue(reflect.ValueOf(v).Int())
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32:
 		return NewLongValue(int64(reflect.ValueOf(v).Uint()))
+	case reflect.Uint64:
+		// uint64 is not supported by AeroSpike, so information about its type being unsigned is lost upon storage
+		// see also: https://github.com/aerospike/aerospike-client-go/issues/62
+		val := reflect.ValueOf(v).Int()
+		return NewLongValue(val)
 	case reflect.String:
 		return NewStringValue(rv.String())
 	}
